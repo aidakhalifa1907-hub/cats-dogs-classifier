@@ -58,8 +58,11 @@ st.markdown("""
     .description-box p {
         color: #444;
         font-size: 0.95rem;
-        margin: 0;
+        margin: 0 0 0.6rem;
         line-height: 1.6;
+    }
+    .description-box p:last-child {
+        margin-bottom: 0;
     }
     .result-box {
         background: white;
@@ -105,11 +108,17 @@ st.markdown("""
 <div class="description-box">
     <h3>À propos de cette application</h3>
     <p>
-        Cette application utilise un réseau de neurones convolutif basé sur <strong>MobileNetV2</strong>,
-        entraîné par transfer learning sur un dataset de 2 000 images (chats et chiens).
-        Il vous suffit de charger une photo — l'application analyse l'image en quelques secondes
-        et prédit automatiquement s'il s'agit d'un <strong>chat 🐱</strong> ou d'un <strong>chien 🐶</strong>,
-        accompagné d'un score de confiance.
+        Cette application prédit automatiquement si une image représente un
+        <strong>chat 🐱</strong> ou un <strong>chien 🐶</strong>.
+        Il vous suffit de charger une photo — l'application analyse l'image
+        en quelques secondes et retourne une prédiction accompagnée d'un score de confiance.
+    </p>
+    <p>
+        Trois modèles ont été entraînés et comparés dans le cadre de ce projet :
+        un CNN from scratch (49.5 % d'accuracy), un CNN avec data augmentation (75.7 %),
+        et <strong>MobileNetV2</strong> par transfer learning, sélectionné comme modèle final
+        avec <strong>98.2 % d'accuracy</strong> sur 2 000 images d'entraînement
+        (1 000 chats + 1 000 chiens).
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -135,13 +144,13 @@ if uploaded:
         st.image(image, use_container_width=True, caption="")
 
     with st.spinner("Analyse en cours..."):
-        model   = get_model()
-        arr     = preprocess(image)
-        proba   = float(model.predict(arr, verbose=0)[0][0])
-        label   = CLASS_NAMES[int(proba > 0.5)]
-        conf    = proba if proba > 0.5 else 1 - proba
-        emoji   = EMOJIS[label]
-        color   = COLORS[label]
+        model    = get_model()
+        arr      = preprocess(image)
+        proba    = float(model.predict(arr, verbose=0)[0][0])
+        label    = CLASS_NAMES[int(proba > 0.5)]
+        conf     = proba if proba > 0.5 else 1 - proba
+        emoji    = EMOJIS[label]
+        color    = COLORS[label]
         conf_pct = int(conf * 100)
         label_fr = "Chat" if label == "cat" else "Chien"
 
