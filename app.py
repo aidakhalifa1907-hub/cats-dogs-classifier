@@ -6,10 +6,10 @@ import keras
 import numpy as np
 from PIL import Image, ImageOps
 
-IMG_SIZE   = (160, 160)
+IMG_SIZE    = (160, 160)
 CLASS_NAMES = ["cat", "dog"]
-EMOJIS     = {"cat": "🐱", "dog": "🐶"}
-COLORS     = {"cat": "#7F77DD", "dog": "#1D9E75"}
+EMOJIS      = {"cat": "🐱", "dog": "🐶"}
+COLORS      = {"cat": "#7F77DD", "dog": "#1D9E75"}
 
 st.set_page_config(
     page_title="Cats vs Dogs",
@@ -19,13 +19,15 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .main { background-color: #f8f9fa; }
+    .stApp {
+        background-color: #f0f2f8;
+    }
     .header-box {
         background: linear-gradient(135deg, #7F77DD 0%, #1D9E75 100%);
         padding: 2rem;
         border-radius: 16px;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     .header-box h1 {
         color: white;
@@ -37,6 +39,27 @@ st.markdown("""
         color: rgba(255,255,255,0.85);
         margin: 0.5rem 0 0;
         font-size: 1rem;
+    }
+    .description-box {
+        background: white;
+        border-radius: 14px;
+        padding: 1.2rem 1.8rem;
+        margin-bottom: 1.5rem;
+        border-left: 5px solid #7F77DD;
+    }
+    .description-box h3 {
+        color: #7F77DD;
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .description-box p {
+        color: #444;
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.6;
     }
     .result-box {
         background: white;
@@ -61,9 +84,6 @@ st.markdown("""
         color: #6c757d;
         margin-bottom: 0.5rem;
     }
-    .stProgress > div > div > div {
-        border-radius: 8px;
-    }
     .upload-hint {
         text-align: center;
         color: #6c757d;
@@ -78,6 +98,19 @@ st.markdown("""
 <div class="header-box">
     <h1>🐾 Cats vs Dogs Classifier</h1>
     <p>Modèle MobileNetV2 — accuracy 98.2 %</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="description-box">
+    <h3>À propos de cette application</h3>
+    <p>
+        Cette application utilise un réseau de neurones convolutif basé sur <strong>MobileNetV2</strong>,
+        entraîné par transfer learning sur un dataset de 2 000 images (chats et chiens).
+        Il vous suffit de charger une photo — l'application analyse l'image en quelques secondes
+        et prédit automatiquement s'il s'agit d'un <strong>chat 🐱</strong> ou d'un <strong>chien 🐶</strong>,
+        accompagné d'un score de confiance.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -102,13 +135,13 @@ if uploaded:
         st.image(image, use_container_width=True, caption="")
 
     with st.spinner("Analyse en cours..."):
-        model  = get_model()
-        arr    = preprocess(image)
-        proba  = float(model.predict(arr, verbose=0)[0][0])
-        label  = CLASS_NAMES[int(proba > 0.5)]
-        conf   = proba if proba > 0.5 else 1 - proba
-        emoji  = EMOJIS[label]
-        color  = COLORS[label]
+        model   = get_model()
+        arr     = preprocess(image)
+        proba   = float(model.predict(arr, verbose=0)[0][0])
+        label   = CLASS_NAMES[int(proba > 0.5)]
+        conf    = proba if proba > 0.5 else 1 - proba
+        emoji   = EMOJIS[label]
+        color   = COLORS[label]
         conf_pct = int(conf * 100)
         label_fr = "Chat" if label == "cat" else "Chien"
 
